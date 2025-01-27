@@ -20,9 +20,9 @@ public class UserService {
     @Autowired
     public CustomMethodRepo customMethodRepo;
 
-    public boolean insertUser(User user){
+    public User insertUser(User user){
         userRepository.save(user);
-        return true;
+        return user;
     }
 
     public boolean updateUser(User user,int userId){

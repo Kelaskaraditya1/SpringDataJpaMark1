@@ -4,6 +4,7 @@ import com.Starkindustries.SpringDataJpaMark1.Model.User;
 import com.Starkindustries.SpringDataJpaMark1.Service.UserService;
 import com.Starkindustries.SpringDataJpaMark1.Service.UserServiceWithoutDatabase;
 import jakarta.persistence.PostRemove;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class Controller {
     }
 
     @PostMapping("/insert")
-    public ResponseEntity<User> addUsers(@RequestBody User user){
+    public ResponseEntity<User> addUsers(@Valid @RequestBody User user){
         User user1 = null;
         try{
             user1=userServiceWithoutDatabase.insertuser(user);
@@ -47,7 +48,7 @@ public class Controller {
             return "User Updated Successfully!!";
         return "Failed to Update User!!";
     }
-
+    
     @GetMapping("/users")
     public ResponseEntity<List<User>> getStudents(){
         if(userServiceWithoutDatabase.getAllusers().isEmpty())

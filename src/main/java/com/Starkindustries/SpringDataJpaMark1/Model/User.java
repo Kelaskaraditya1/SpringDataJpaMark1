@@ -1,6 +1,10 @@
 package com.Starkindustries.SpringDataJpaMark1.Model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name="Users")
@@ -10,15 +14,28 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
 
+    @NotNull(message = "Name should not be null!")
+    @NotEmpty(message = "Should not be empty!!")
+    @NotBlank(message = "Should not be Blank!!")
     @Column(name = "Name")
     private String name;
 
+    @NotNull(message = "Email should not be null!")
+    @NotBlank(message = "Should not be empty!!")
+    @NotEmpty(message = "Should not be Blank!!")
     @Column(name = "Email")
+    @Email(message = "Enter Proper email-address")
     private String email;
 
+    @NotNull(message = "Username should not be null!")
+    @NotBlank(message = "Should not be empty!!")
+    @NotEmpty(message = "Should not be Blank!!")
     @Column(name = "Username")
     private String username;
 
+    @NotNull(message = "Password should not be null!")
+    @NotBlank(message = "Should not be empty!!")
+    @NotEmpty(message = "Should not be Blank!!")
     @Column(name = "Password")
     private String password;
 
