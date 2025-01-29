@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotNull;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int userId;
 
     @NotNull(message = "Name should not be null!")

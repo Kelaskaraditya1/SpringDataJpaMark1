@@ -21,8 +21,6 @@ public class Controller {
     @Autowired
     public UserService userService;
 
-    @Autowired
-    public UserServiceWithoutDatabase userServiceWithoutDatabase;
 
     @GetMapping("/hello")
     public String greetings(){
@@ -33,7 +31,7 @@ public class Controller {
     public ResponseEntity<User> addUsers(@Valid @RequestBody User user){
         User user1 = null;
         try{
-            user1=userServiceWithoutDatabase.insertuser(user);
+            user1=userService.insertUser(user);
             return ResponseEntity.of(Optional.of(user1));
         }catch (Exception e){
             e.printStackTrace();
@@ -43,24 +41,24 @@ public class Controller {
     }
 
     @PutMapping("/update/{userId}")
-    public String updateUser(@RequestBody User user,@PathVariable("userId") int userId){
-        if(userServiceWithoutDatabase.updateUser(userId,user))
-            return "User Updated Successfully!!";
-        return "Failed to Update User!!";
+    public ResponseEntity<User> updateUser(@RequestBody User user,@PathVariable("userId") int userId){
+        User user1 = userService.updateUser(user,userId);
+        if(user1!=null)
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(user1);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
     
     @GetMapping("/users")
     public ResponseEntity<List<User>> getStudents(){
-        if(userServiceWithoutDatabase.getAllusers().isEmpty())
+        if(userService.getUsers().isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        return ResponseEntity.of(Optional.of(userServiceWithoutDatabase.getAllusers()));
+        return ResponseEntity.of(Optional.of(userService.getUsers()));
     }
 
     @DeleteMapping("/delete/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable("userId") int userId){
-
         try{
-            userServiceWithoutDatabase.deleteUSer(userId);
+            userService.deleteUSer(userId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }catch (Exception e){
             e.printStackTrace();
@@ -70,13 +68,37 @@ public class Controller {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<User> getUser(@PathVariable("userId") int userId){
-        if(userServiceWithoutDatabase.getUser(userId)==null)
+        if(userService.getUser(userId)==null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        return ResponseEntity.of(Optional.of(userServiceWithoutDatabase.getUser(userId)));
+        return ResponseEntity.status(HttpStatus.FOUND).body(userService.getUser(userId));
     }
 
-//    @GetMapping("/user/{name}")
-//    public User getUserByName(@PathVariable("name") String name){
-//        return userService.getUserByName(name);
-//    }
+    @GetMapping("/username/{username}")
+    public ResponseEntity<User> getUserByName(@PathVariable("username") String username){
+        User user=userService.getUserByUsername(username);
+        if(user!=null)
+            return ResponseEntity.status(HttpStatus.OK).body(user);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @GetMapping("/findByUsernameAndName/{username}/{name}")
+    public ResponseEntity<User> findByUsernameAndName(@PathVariable("username") String username,@PathVariable("name") String name){
+        if(userService.getUserByUsernameAndName(username,name)==null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.status(HttpStatus.FOUND).body(userService.getUserByUsernameAndName(username,name));
+    }
+
+    @GetMapping("/findUserContaining/{pattern}")
+    public ResponseEntity<List<User>> findUsersContaining(@PathVariable("pattern") String pattern){
+        if(userService.getNamesContaining(pattern).isEmpty())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.status(HttpStatus.FOUND).body(userService.getNamesContaining(pattern));
+    }
+
+    @GetMapping("/UsersUsingPagination/{pageNo}/{pageSize}")
+    public ResponseEntity<List<User>> getUsersUsingPagination(@PathVariable("pageNo") int pageNo, @PathVariable("pageSize") int pageSize){
+        if(userService.getUserUsingPaging(pageNo,pageSize).isEmpty())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserUsingPaging(pageNo,pageSize));
+    }
 }
