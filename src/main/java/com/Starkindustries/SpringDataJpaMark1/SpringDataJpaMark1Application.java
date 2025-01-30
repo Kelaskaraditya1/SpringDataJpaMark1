@@ -8,7 +8,7 @@ public class SpringDataJpaMark1Application {
 
 	public static void main(String[] args) {
 
-		SpringApplication.		run(SpringDataJpaMark1Application.class, args);
+		SpringApplication.run(SpringDataJpaMark1Application.class, args);
 	}
 
 }

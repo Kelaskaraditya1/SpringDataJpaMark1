@@ -1,17 +1,19 @@
 package com.Starkindustries.SpringDataJpaMark1.Controller;
 
+import com.Starkindustries.SpringDataJpaMark1.Mappings.OneToMany.Employees;
+import com.Starkindustries.SpringDataJpaMark1.Mappings.OneToMany.Projects;
+import com.Starkindustries.SpringDataJpaMark1.Mappings.Repository.ProjectsRepository;
+import com.Starkindustries.SpringDataJpaMark1.Mappings.Request.ProjectRequest;
 import com.Starkindustries.SpringDataJpaMark1.Model.User;
+import com.Starkindustries.SpringDataJpaMark1.Mappings.Repository.DepartmentRepository;
+import com.Starkindustries.SpringDataJpaMark1.Mappings.Repository.EmployeeRepository;
 import com.Starkindustries.SpringDataJpaMark1.Service.UserService;
-import com.Starkindustries.SpringDataJpaMark1.Service.UserServiceWithoutDatabase;
-import jakarta.persistence.PostRemove;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +23,14 @@ public class Controller {
     @Autowired
     public UserService userService;
 
+    @Autowired
+    public EmployeeRepository employeeRepository;
+
+    @Autowired
+    public DepartmentRepository departmentRepository;
+
+    @Autowired
+    public ProjectsRepository projectsRepository;
 
     @GetMapping("/hello")
     public String greetings(){
@@ -100,5 +110,41 @@ public class Controller {
         if(userService.getUserUsingPaging(pageNo,pageSize).isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserUsingPaging(pageNo,pageSize));
+    }
+
+//    @PostMapping("/insert-employee")
+//    public ResponseEntity<Employee> insertEmployee(@RequestBody EmployeeRequest employeeRequest){
+//        Department department = new Department(employeeRequest.getDepartment());
+//        departmentRepository.save(department);
+//
+//        Employee employee = new Employee();
+//        employee.setName(employeeRequest.getName());
+//        employee.setDepartment(department);
+//        employeeRepository.save(employee);
+//        return ResponseEntity.status(HttpStatus.OK).body(employee);
+//    }
+//
+//    @GetMapping("/find/byDepartment/{department}")
+//    public ResponseEntity<List<Employee>> getEmployeeWithDepartment(@PathVariable("department") String department){
+//        if(employeeRepository.findByDepartmentName(department).isEmpty())
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        return ResponseEntity.status(HttpStatus.OK).body(employeeRepository.findByDepartmentName(department));
+//    }
+
+    @PostMapping("/insert-project")
+    public ResponseEntity<String> insertProject(@RequestBody ProjectRequest projectRequest){
+        Employees employee = new Employees();
+        employee.setEmpName(projectRequest.getEmpName());
+        employeeRepository.save(employee);
+        if(!projectRequest.getProjectsList().isEmpty()){
+            projectRequest.getProjectsList().stream().forEach(project->{
+                Projects projects = new Projects();
+                projects.setName(project);
+                projects.setEmployee(employee);
+                projectsRepository.save(projects);
+            });
+            return ResponseEntity.status(HttpStatus.CREATED).body("Record inserted Successfully!!");
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to insert Record!!");
     }
 }
